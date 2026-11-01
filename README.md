@@ -98,156 +98,101 @@ pip install opencv-contrib-python-headless numpy matplotlib
 
 ## PROGRAM
 
-### Step 1: Import Libraries and Load the Face Image
-
+# step 1: Import Libraries and Load the Face Image
+# Import libraries
 ```
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-
-# Load the face image
-faceImage = cv2.imread('you.JPG')
-
-# Display the original face image
-plt.imshow(faceImage[:, :, ::-1])
-plt.title("Face")
-plt.axis('off')
-plt.show()
-
-# Display image dimensions
-print(faceImage.shape)
 ```
 
-### Step 2: Load and Resize the Sunglasses Image
-
+# Load the Face Image
 ```
-# Load the sunglasses image with alpha channel
-glassPNG = cv2.imread('sunglass.png', -1)
-
-# Display the sunglasses image
-plt.imshow(glassPNG[:, :, ::-1])
-plt.title("Sunglasses Image")
-plt.axis('off')
-plt.show()
-
-# Resize the sunglasses to fit the eye region
-glassPNG = cv2.resize(glassPNG, (250, 80))
-
-print("Image Dimension =", glassPNG.shape)
+faceImage = cv2.imread('you.jpeg')
+plt.imshow(faceImage[:,:,::-1]);plt.title("Face")
+faceImage.shape
 ```
-
-### Step 3: Separate Color and Alpha Channels
-
+# Step 2: Load the Sunglass Image with Alpha Channel
+# Load the Sunglass image with Alpha channel
+# (http://pluspng.com/sunglass-png-1104.html)
 ```
-# Extract color channels
-glassBGR = glassPNG[:, :, 0:3]
-
-# Extract alpha channel
-glassMask1 = glassPNG[:, :, 3]
-
-# Display color and alpha channels
-plt.figure(figsize=[15, 15])
-
-plt.subplot(121)
-plt.imshow(glassBGR[:, :, ::-1])
-plt.title("Sunglass Color Channels")
-plt.axis('off')
-
-plt.subplot(122)
-plt.imshow(glassMask1, cmap='gray')
-plt.title("Sunglass Alpha Channel")
-plt.axis('off')
-
-plt.show()
+glassPNG = cv2.imread('sunglass.png',-1)
+plt.imshow(glassPNG[:,:,::-1]);plt.title("glassPNG")
 ```
-
-### Step 4: Apply Sunglasses Using Direct Replacement
-
+# Step 3: Resize the Image to Fit Over the Eye Region
+# Resize the image to fit over the eye region
 ```
-# Make a copy of the original face image
+glassPNG = cv2.resize(glassPNG,(250, 80))
+print("image Dimension ={}".format(glassPNG.shape))
+```
+# Step 4: Separate the Color and Alpha Channels
+# Separate the Color and alpha channels
+```
+glassBGR = glassPNG[:,:,0:3]
+glassMask1 = glassPNG[:,:,3]
+
+# Display the images for clarity
+plt.figure(figsize=[15,15])
+
+plt.subplot(121);plt.imshow(glassBGR[:,:,::-1]);plt.title('Sunglass Color channels')
+
+plt.subplot(122);plt.imshow(glassMask1,cmap='gray');plt.title('Sunglass Alpha channel')
+```
+# Step 5: Apply Sunglasses Using Direct Replacement
+# Make a copy
+```
+#faceWithGlassesNaive = resized_faceImage.copy()
 faceWithGlassesNaive = faceImage.copy()
 
-# Replace the eye region with the sunglasses image
-faceWithGlassesNaive[260:340, 330:580] = glassBGR
+# Replace the eye region with the sunglass image
+faceWithGlassesNaive[260:340, 330:580]=glassBGR
 
-# Display the result
-plt.imshow(faceWithGlassesNaive[:, :, ::-1])
-plt.title("Face with Sunglasses - Direct Replacement")
-plt.axis('off')
-plt.show()
+plt.imshow(faceWithGlassesNaive[...,::-1])
 ```
-
-### Step 5: Create the Mask
-
+# Step 6: Create the Mask and Perform Image Arithmetic
+# Make the dimensions of the mask same as the input image.
+# Since Face Image is a 3-channel image, we create a 3 channel image for the mask
 ```
-# Convert the alpha channel into a three-channel mask
-glassMask = cv2.merge(
-    (glassMask1, glassMask1, glassMask1)
-)
+glassMask = cv2.merge((glassMask1,glassMask1,glassMask1))
 
-# Convert mask values to 0 and 1
-glassMask = np.uint8(glassMask / 255)
-```
+# Make the values [0,1] since we are using arithmetic operations
+glassMask = np.uint8(glassMask/255)
 
-### Step 6: Perform Image Arithmetic
-
-```
-# Create a copy of the original face image
+# Make a copy
 faceWithGlassesArithmetic = faceImage.copy()
 
-# Extract the eye region
-eyeROI = faceWithGlassesArithmetic[260:340, 330:580]
+# Get the eye region from the face image
+eyeROI= faceWithGlassesArithmetic[260:340, 330:580]
 
-# Apply inverse mask to the eye region
-maskedEye = cv2.multiply(eyeROI, (1 - glassMask))
+# Use the mask to create the masked eye region
+maskedEye = cv2.multiply(eyeROI,(1-  glassMask ))
 
-# Apply mask to the sunglasses image
-maskedGlass = cv2.multiply(glassBGR, glassMask)
+# Use the mask to create the masked sunglass region
+maskedGlass = cv2.multiply(glassBGR,glassMask)
 
-# Combine the masked images
+# Combine the Sunglass in the Eye Region to get the augmented image
 eyeRoiFinal = cv2.add(maskedEye, maskedGlass)
 
-# Display intermediate results
-plt.figure(figsize=[20, 20])
-
-plt.subplot(131)
-plt.imshow(maskedEye[:, :, ::-1])
-plt.title("Masked Eye Region")
-plt.axis('off')
-
-plt.subplot(132)
-plt.imshow(maskedGlass[:, :, ::-1])
-plt.title("Masked Sunglass Region")
-plt.axis('off')
-
-plt.subplot(133)
-plt.imshow(eyeRoiFinal[:, :, ::-1])
-plt.title("Augmented Eye and Sunglass")
-plt.axis('off')
-
-plt.show()
+# Display the intermediate results
+plt.figure(figsize=[20,20])
+plt.subplot(131);plt.imshow(maskedEye[...,::-1]);plt.title("Masked Eye Region")
+plt.subplot(132);plt.imshow(maskedGlass[...,::-1]);plt.title("Masked Sunglass Region")
+plt.subplot(133);plt.imshow(eyeRoiFinal[...,::-1]);plt.title("Augmented Eye and Sunglass")
+```
+# Step 7: Display the Final Augmented Image
+# Replace the eye ROI with the output from the previous section
+```
+faceWithGlassesArithmetic[260:340, 330:580]=eyeRoiFinal
 ```
 
-### Step 7: Display the Final Augmented Image
-
+# Display the final result
 ```
-# Replace the eye region with the augmented result
-faceWithGlassesArithmetic[260:340, 330:580] = eyeRoiFinal
 
-# Display original and augmented images
-plt.figure(figsize=[20, 20])
+plt.figure(figsize=[8,10])
 
-plt.subplot(121)
-plt.imshow(faceImage[:, :, ::-1])
-plt.title("Original Image")
-plt.axis('off')
+plt.subplot(121);plt.imshow(faceImage[:,:,::-1]); plt.title("Original Image")
 
-plt.subplot(122)
-plt.imshow(faceWithGlassesArithmetic[:, :, ::-1])
-plt.title("With Sunglasses")
-plt.axis('off')
-
-plt.show()
+plt.subplot(122);plt.imshow(faceWithGlassesArithmetic[:,:,::-1]);plt.title("With Sunglasses")
 ```
 
 ## OUTPUT
