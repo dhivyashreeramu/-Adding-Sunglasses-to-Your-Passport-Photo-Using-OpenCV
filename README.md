@@ -213,15 +213,17 @@ plt.subplot(122);plt.imshow(faceWithGlassesArithmetic[:,:,::-1]);plt.title("With
 <img width="1210" height="234" alt="image" src="https://github.com/user-attachments/assets/bca08e5f-3388-4d09-af90-13404db79c94" />
 
 # 4. Face image with sunglasses applied using direct pixel replacement.
-<img width="362" height="418" alt="image" src="https://github.com/user-attachments/assets/efaee72c-08dd-45af-8746-2025a436e092" />
+<img width="362" height="418" alt="image" src="https://github.com/user-attachments/assets/ccb888b9-b0fb-4860-9c6c-f4589d9f0c9e" />
+
 
 
 # 5. Masked sunglasses region displayed.
-<img width="1597" height="210" alt="image" src="https://github.com/user-attachments/assets/dd43ec9f-75a3-4782-8273-f4ae1627d1c4" />
+<img width="1597" height="211" alt="image" src="https://github.com/user-attachments/assets/2aa991be-38f4-4461-95bb-c28a8d1a3fff" />
+
 
 
 # 6. Original face image and final augmented image displayed side by side.
-<img width="685" height="415" alt="image" src="https://github.com/user-attachments/assets/3593699e-b5a4-4737-a69c-5ba02dbe593f" />
+<img width="685" height="415" alt="image" src="https://github.com/user-attachments/assets/0e125d16-b22e-4431-a632-9b0b4387ca9f" />
 
 
 ## RESULT
